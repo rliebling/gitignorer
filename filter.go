@@ -3,13 +3,9 @@ package gitignorer
 import (
 	"bufio"
 	"io"
-	"log"
-	"os"
-	"path/filepath"
+
 	"regexp"
 	"strings"
-
-	"github.com/rliebling/env"
 )
 
 type PathFilter interface {
@@ -26,7 +22,7 @@ type GitFilter struct {
 }
 
 func NewFilter() (*GitFilter, error) {
-	r := findGlobalGitignore()
+	r, _ := openGlobalGitignore()
 	return NewFilterFromReader(r)
 }
 
@@ -47,11 +43,10 @@ func NewFilterFromReader(content io.Reader) (*GitFilter, error) {
 
 		gf.patterns = append(gf.patterns, FilterPattern{Pattern: *re, Include: p.Include})
 	}
-	log.Printf("GitIgnoreFilter: %+v\n", gf)
 	return &gf, nil
 }
 
-func (gf GitFilter) Match(path string) bool {
+func (gf *GitFilter) Match(path string) bool {
 	matches := false
 	for _, p := range gf.patterns {
 		isRegexMatch := p.Pattern.MatchString(path)
@@ -61,14 +56,5 @@ func (gf GitFilter) Match(path string) bool {
 			matches = true
 		}
 	}
-	if matches {
-		log.Printf("filtering out: %v\n", path)
-	}
 	return matches
-}
-
-func findGlobalGitignore() io.Reader {
-	homeDir, _ := env.GetHomedir()
-	f, _ := os.Open(filepath.Join(homeDir, ".gitignore"))
-	return f
 }
