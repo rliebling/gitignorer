@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-package pathspec
+package gitignorer
 
 import (
 	"bufio"

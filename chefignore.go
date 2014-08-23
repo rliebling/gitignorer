@@ -33,7 +33,7 @@
 // [1] https://code.google.com/p/go/source/browse/src/pkg/path/match.go
 //
 
-package pathspec
+package gitignorer
 
 import (
 	"bufio"
